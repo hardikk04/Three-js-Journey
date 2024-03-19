@@ -100,7 +100,7 @@ const material = new THREE.MeshPhysicalMaterial();
 material.metalness = 0;
 material.roughness = 0;
 // material.map = colorTexture;
-// material.aoMap = ambientOcclusionTexture;
+// material.aoMap = a mbientOcclusionTexture;
 // material.aoMapIntensity = 1;
 // material.displacementMap = heightTexture;
 // material.displacementScale = 0.1;
@@ -125,13 +125,13 @@ material.iridescence = 1;
 material.iridescenceIOR = 1;
 material.iridescenceThicknessRange = [100, 800];
 
-material.transmission = 1
-material.ior = 1.5
-material.thickness = 0.5
+material.transmission = 1;
+material.ior = 1.5;
+material.thickness = 0.5;
 
-gui.add(material, 'transmission').min(0).max(1).step(0.0001)
-gui.add(material, 'ior').min(1).max(10).step(0.0001)
-gui.add(material, 'thickness').min(0).max(1).step(0.0001)
+gui.add(material, "transmission").min(0).max(1).step(0.0001);
+gui.add(material, "ior").min(1).max(10).step(0.0001);
+gui.add(material, "thickness").min(0).max(1).step(0.0001);
 
 // Mesh
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 64, 64), material);
@@ -140,7 +140,7 @@ sphere.position.x = -1.5;
 const plane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 100, 100), material);
 
 const torus = new THREE.Mesh(
-  new THREE.TorusGeometry(0.3, 0.2, 64, 128),
+  new THREE.TorusGeometry(0.3, 0.2, 64, 128), 
   material
 );
 torus.position.x = 1.5;
@@ -159,7 +159,7 @@ camera.position.z = 3;
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
-  canvas: document.querySelector(".webgl"),
+  canvas: document.querySelector(".webgl"),  
 });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
