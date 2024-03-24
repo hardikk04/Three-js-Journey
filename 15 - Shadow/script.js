@@ -17,7 +17,8 @@ const shadowPlane = new THREE.Mesh(
     transparent: true,
   })
 );
-shadowPlane.position.y = 0.01;
+
+shadowPlane.position.y = -0.49;
 shadowPlane.rotation.x = -Math.PI / 2;
 scene.add(shadowPlane);
 
