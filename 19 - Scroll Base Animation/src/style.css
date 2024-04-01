@@ -1,0 +1,38 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  width: 100%;
+  height: 100%;
+}
+
+.main {
+  position: relative;
+  width: 100%;
+  background-color: #000;
+}
+
+.section {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  /* justify-content: center; */
+  align-items: center;
+  font-size: 8vw;
+  font-family: gilroy;
+  padding: 4vw;
+  color: #fff;
+}
+
+.section:nth-child(odd) {
+  justify-content: end;
+}
+
+.webgl {
+  position: fixed;
+}
