@@ -1,11 +1,48 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import GUI from "lil-gui";
+import CANNON, { Vec3 } from "cannon";
 
 /**
  * Debug
  */
 const gui = new GUI();
+
+// Debug Object
+const debugObject = {};
+
+// Debug Create Sphere
+debugObject.createSphere = () => {
+  createSphere(Math.random() * 0.5, {
+    x: (Math.random() - 0.5) * 3,
+    y: 3,
+    z: (Math.random() - 0.5) * 3,
+  });
+};
+
+gui.add(debugObject, "createSphere");
+
+// Debug Create Box
+debugObject.createBox = () => {
+  createBox(Math.random(), Math.random(), Math.random(), {
+    x: (Math.random() - 0.5) * 3,
+    y: 3,
+    z: (Math.random() - 0.5) * 3,
+  });
+};
+gui.add(debugObject, "createBox");
+
+debugObject.reset = () => {
+  objectNeedsUpdate.forEach((obj) => {
+    // Mesh
+    scene.remove(obj.mesh);
+
+    // Physics
+    obj.body.removeEventListener("collide", playHitSound);
+    world.removeBody(obj.body);
+  });
+};
+gui.add(debugObject, "reset");
 
 /**
  * Base
@@ -15,6 +52,19 @@ const canvas = document.querySelector("canvas.webgl");
 
 // Scene
 const scene = new THREE.Scene();
+
+/**
+ * Sound
+ */
+const hitSound = new Audio("/sounds/hit.mp3");
+const playHitSound = (collision) => {
+  const impactStrength = collision.contact.getImpactVelocityAlongNormal();
+  if (impactStrength > 1.5) {
+    hitSound.volume = Math.random();
+    hitSound.currentTime = 0;
+    hitSound.play();
+  }
+};
 
 /**
  * Textures
@@ -30,22 +80,40 @@ const environmentMapTexture = cubeTextureLoader.load([
   "/textures/environmentMaps/0/pz.png",
   "/textures/environmentMaps/0/nz.png",
 ]);
+environmentMapTexture.colorSpace = THREE.SRGBColorSpace;
+
+/**
+ * Physics
+ */
+const world = new CANNON.World();
+world.broadphase = new CANNON.SAPBroadphase(world);
+world.allowSleep = true;
+world.gravity.set(0, -9.82, 0);
+
+// Physics Material
+const defaultMaterial = new CANNON.Material("default");
+const defaultContactMaterial = new CANNON.ContactMaterial(
+  defaultMaterial,
+  defaultMaterial,
+  {
+    friction: 0.1,
+    restitution: 0.7,
+  }
+);
+world.addContactMaterial(defaultContactMaterial);
+world.defaultContactMaterial = defaultContactMaterial;
+
+// Physics Plane
+const planeShape = new CANNON.Plane();
+const planeBody = new CANNON.Body();
+planeBody.mass = 0;
+planeBody.addShape(planeShape);
+planeBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), Math.PI * 0.5);
+world.addBody(planeBody);
 
 /**
  * Test sphere
  */
-const sphere = new THREE.Mesh(
-  new THREE.SphereGeometry(0.5, 32, 32),
-  new THREE.MeshStandardMaterial({
-    metalness: 0.3,
-    roughness: 0.4,
-    envMap: environmentMapTexture,
-    envMapIntensity: 0.5,
-  })
-);
-sphere.castShadow = true;
-sphere.position.y = 0.5;
-scene.add(sphere);
 
 /**
  * Floor
@@ -132,12 +200,99 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 /**
+ * Create Objects
+ */
+const objectNeedsUpdate = [];
+
+const sphereGeometry = new THREE.SphereGeometry(1, 20, 20);
+const sphereMaterial = new THREE.MeshStandardMaterial({
+  metalness: 0.3,
+  roughness: 0.4,
+  envMap: environmentMapTexture,
+});
+
+// Create Sphere
+const createSphere = (radius, position) => {
+  // Three js Sphere
+
+  const mesh = new THREE.Mesh(sphereGeometry, sphereMaterial);
+  mesh.scale.set(radius, radius, radius);
+
+  // mesh.position.y = 0.5;
+  mesh.position.copy(position);
+  mesh.castShadow = true;
+  scene.add(mesh);
+
+  // Physics Sphere
+  const shape = new CANNON.Sphere(radius);
+  const body = new CANNON.Body({
+    mass: 1,
+    position: new CANNON.Vec3(0, 3, 0),
+    shape,
+    material: defaultMaterial,
+  });
+  body.position.copy(position);
+  body.addEventListener("collide", playHitSound);
+  world.addBody(body);
+
+  objectNeedsUpdate.push({
+    mesh,
+    body,
+  });
+};
+
+createSphere(0.5, { x: 0, y: 3, z: 0 });
+
+// Create Box
+const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+
+const createBox = (width, height, depth, position) => {
+  // Three js Box
+
+  const mesh = new THREE.Mesh(boxGeometry, sphereMaterial);
+  mesh.scale.set(width, height, depth);
+  mesh.position.copy(position);
+  scene.add(mesh);
+  mesh.castShadow = true;
+
+  // Physics Box
+  const boxSize = new CANNON.Vec3(width * 0.5, height * 0.5, depth * 0.5);
+  const shape = new CANNON.Box(boxSize);
+  const body = new CANNON.Body({
+    mass: 1,
+    position: new CANNON.Vec3(2, 3, 0),
+    shape: shape,
+    material: defaultMaterial,
+  });
+  body.position.copy(position);
+  world.addBody(body);
+  body.addEventListener("collide", playHitSound);
+
+  objectNeedsUpdate.push({
+    mesh,
+    body,
+  });
+};
+
+/**
  * Animate
  */
 const clock = new THREE.Clock();
+let oldElapsedTime = 0;
 
 const tick = () => {
   const elapsedTime = clock.getElapsedTime();
+  const deltaTime = elapsedTime - oldElapsedTime;
+  oldElapsedTime = elapsedTime;
+
+  // Updating physics world
+
+  world.step(1 / 60, deltaTime, 3);
+
+  objectNeedsUpdate.forEach((obj) => {
+    obj.mesh.position.copy(obj.body.position);
+    obj.mesh.quaternion.copy(obj.body.quaternion);
+  });
 
   // Update controls
   controls.update();
