@@ -8,9 +8,13 @@ gsap.registerPlugin(ScrollTrigger);
 // Scene
 const scene = new THREE.Scene();
 
-// Group
-const group = new THREE.Group();
-scene.add(group);
+// Camera Group
+const cameraGroup = new THREE.Group();
+scene.add(cameraGroup);
+
+// Meshes Group
+const meshesGroup = new THREE.Group();
+scene.add(meshesGroup);
 
 // Debug GUI
 const gui = new GUI({ width: 400 });
@@ -55,7 +59,7 @@ mesh1.position.x = 2.5;
 mesh2.position.x = -2.5;
 mesh3.position.x = 2.5;
 
-scene.add(mesh1, mesh2, mesh3);
+meshesGroup.add(mesh1, mesh2, mesh3);
 
 // Array of all objects
 const sectionMeshes = [mesh1, mesh2, mesh3];
@@ -148,7 +152,7 @@ const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight
 );
-group.add(camera);
+cameraGroup.add(camera);
 camera.position.z = 3;
 
 // Resize window
@@ -213,7 +217,7 @@ const tick = () => {
     mesh.rotation.y = elapsedTime * 0.15;
   });
 
-  group.position.y = (-scrollY / window.innerHeight) * objectDistance;
+  cameraGroup.position.y = (-scrollY / window.innerHeight) * objectDistance;
 
   renderer.render(scene, camera);
   requestAnimationFrame(tick);
