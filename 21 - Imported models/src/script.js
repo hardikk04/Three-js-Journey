@@ -53,7 +53,7 @@ gltfLoader.load("/models/Fox/glTF/Fox.gltf", (gltf) => {
   scene.add(gltf.scene);
 
   mixer = new THREE.AnimationMixer(gltf.scene);
-  const action = mixer.clipAction(gltf.animations[0]);
+  const action = mixer.clipAction(gltf.animations[2]);
   action.play();
 });
 
@@ -127,7 +127,7 @@ const tick = () => {
   controls.update();
 
   const elapsedTime = clock.getElapsedTime();
-  const deltaTime = oldtime - elapsedTime;
+  const deltaTime = elapsedTime - oldtime;
   oldtime = elapsedTime;
 
   // Update mixer
