@@ -30,32 +30,35 @@ const scene = new THREE.Scene();
 /**
  * Update all materials
  */
-const updateAllMaterials = () => {
-  scene.traverse((child) => {
-    if (child.isMesh && child.material.isMeshStandardMaterial) {
-      // child.material.envMap = environmentMap;
-      child.material.envMapIntensity = global.envMapIntensity;
-    }
-  });
-};
+// const updateAllMaterials = () => {
+//   scene.traverse((child) => {
+//     if (child.isMesh && child.material.isMeshStandardMaterial) {
+//       scene.environmentIntensity = global.envMapIntensity;
+//     }
+//   });
+// };
+
+console.log(scene.environmentIntensity);
 
 /**
  * Environment map
  */
+scene.environmentIntensity = 3;
 scene.backgroundBlurriness = 0;
 scene.backgroundIntensity = 1;
 
 gui.add(scene, "backgroundBlurriness").min(0).max(1).step(0.01);
 gui.add(scene, "backgroundIntensity").min(0).max(10).step(0.01);
+gui.add(scene, "environmentIntensity").min(0).max(10).step(0.01);
 
 // Global intensity
 global.envMapIntensity = 1;
-gui
-  .add(global, "envMapIntensity")
-  .min(0)
-  .max(10)
-  .step(0.01)
-  .onChange(updateAllMaterials);
+// gui
+//   .add(global, "envMapIntensity")
+//   .min(0)
+//   .max(10)
+//   .step(0.01)
+//   .onChange(updateAllMaterials);
 
 // LDR cube texture
 // const environmentMap = cubeTextureLoader.load([
@@ -119,7 +122,7 @@ const holyDonut = new THREE.Mesh(
   new THREE.MeshBasicMaterial({ color: new THREE.Color(10, 4, 2) })
 );
 holyDonut.position.y = 3.5;
-holyDonut.layers.enable(1)
+holyDonut.layers.enable(1);
 scene.add(holyDonut);
 
 // Cube render target
