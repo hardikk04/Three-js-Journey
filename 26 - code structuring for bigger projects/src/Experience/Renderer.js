@@ -1,13 +1,13 @@
 import * as THREE from "three";
-import Experience from "./experience";
+import Experience from "./Experience";
 
 export default class Renderer {
   constructor() {
     this.experience = new Experience();
-    this.sizes = this.experience.sizes;
-    this.scene = this.experience.scene;
     this.canvas = this.experience.canvas;
+    this.sizes = this.experience.sizes;
     this.camera = this.experience.camera;
+    this.scene = this.experience.scene;
 
     this.setInstance();
   }
@@ -16,6 +16,7 @@ export default class Renderer {
       canvas: this.canvas,
       antialias: true,
     });
+
     this.instance.toneMapping = THREE.CineonToneMapping;
     this.instance.toneMappingExposure = 1.75;
     this.instance.shadowMap.enabled = true;
@@ -24,7 +25,6 @@ export default class Renderer {
     this.instance.setSize(this.sizes.width, this.sizes.height);
     this.instance.setPixelRatio(this.sizes.pixelRatio);
   }
-
   resize() {
     this.instance.setSize(this.sizes.width, this.sizes.height);
     this.instance.setPixelRatio(this.sizes.pixelRatio);
