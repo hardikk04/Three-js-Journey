@@ -18,7 +18,7 @@ const scene = new THREE.Scene();
  * TextureLoader
  */
 const textureLoader = new THREE.TextureLoader();
-const flag = textureLoader.load("/flag.jpg");
+const flag = textureLoader.load("/image-1.jpg");
 
 /**
  * Plane

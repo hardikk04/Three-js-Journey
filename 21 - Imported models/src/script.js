@@ -48,14 +48,15 @@ gltfLoader.setDRACOLoader(dracoLoader);
 
 // ------------------------Fox-------------------------------
 let mixer = null;
-gltfLoader.load("/models/Fox/glTF/Fox.gltf", (gltf) => {
-  gltf.scene.scale.set(0.015, 0.015, 0.015);
+gltfLoader.load("/models/myavatar.glb", (gltf) => {
+  // gltf.scene.scale.set(0.015, 0.015, 0.015);
   scene.add(gltf.scene);
-  console.log(gltf.scene);
+  gltf.scene.position.y = -0.5;
+  gltf.scene.position.x = 2;
 
-  mixer = new THREE.AnimationMixer(gltf.scene);
-  const action = mixer.clipAction(gltf.animations[2]);
-  action.play();
+  // mixer = new THREE.AnimationMixer(gltf.scene);
+  // const action = mixer.clipAction(gltf.animations[2]);
+  // action.play();
 });
 
 /**
@@ -69,19 +70,20 @@ plane.material.color = new THREE.Color("#777777");
 plane.material.roughness = 0.4;
 plane.material.metalness = 0.3;
 plane.rotation.x = -Math.PI * 0.5;
-
-scene.add(plane);
+plane.position.y = -0.5;
+// scene.add(plane);
 
 /**
  * Light
  */
 
 // Ambient light
-const ambientLight = new THREE.AmbientLight("#ffffff", 2.6);
+const ambientLight = new THREE.AmbientLight("#ffffff", 5.6);
 scene.add(ambientLight);
 
 // Directional light
-const directionalLight = new THREE.DirectionalLight("#ffffff", 1);
+const directionalLight = new THREE.DirectionalLight("#ffffff", 5);
+// directionalLight.position.set(1,0,0)
 scene.add(directionalLight);
 
 /**
